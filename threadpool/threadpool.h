@@ -49,10 +49,11 @@ static void* YThreadpool_callback(void* arg) {
 }
 
 int YThreadpool_create(YThreadpool* pool, int worker_cnt, YThreadpoolCallback cb) {
+#ifdef DEBUG_MODE
     printf("threadpool create begin\n");
-
+#endif
     if (worker_cnt < 1) worker_cnt = 1;
-    memset(pool, 0, sizeof(pool));
+    memset(pool, 0, sizeof(YThreadpool));
 
     pthread_cond_t blank_cond = PTHREAD_COND_INITIALIZER;
     memcpy(&pool->jobs_cond, &blank_cond, sizeof(blank_cond));
@@ -75,12 +76,14 @@ int YThreadpool_create(YThreadpool* pool, int worker_cnt, YThreadpoolCallback cb
             free(worker);
             return -1;
         }
+#ifdef DEBUG_MODE
         printf("create a new worker\n");
-
+#endif
         YLIST_ADD(worker, pool->workers);
     }
-
+#ifdef DEBUG_MODE
     printf("threadpool create end\n");
+#endif
     return 0;
 }
 
@@ -96,18 +99,22 @@ void YThreadpool_push(YThreadpool* pool, YJob* job) {
 }
 
 int YThreadpool_destroy(YThreadpool* pool) {
+#ifdef DEBUG_MODE
     printf("threadpool destroy begin\n");
-
+#endif
     for (YWorker* worker = pool->workers; worker != NULL; worker = worker->next) {
         worker->terminate = 1;
+#ifdef DEBUG_MODE
         printf("terminate a worker\n");
+#endif
     }
 
     pthread_mutex_lock(&pool->jobs_mutex);
     pthread_cond_broadcast(&pool->jobs_cond);
     pthread_mutex_unlock(&pool->jobs_mutex);
-
+#ifdef DEBUG_MODE
     printf("threadpool destroy end\n");
+#endif
 }
 
 #endif

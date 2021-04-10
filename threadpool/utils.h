@@ -4,6 +4,8 @@
 // Created by yuejiayuan on 2021/4/4.
 //
 
+//#define DEBUG_MODE
+
 // 头插法入链表
 #define YLIST_ADD(item, list) do {  \
     item->prev = NULL;  \
