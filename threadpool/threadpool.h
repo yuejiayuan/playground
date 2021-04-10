@@ -55,14 +55,14 @@ int YThreadpool_create(YThreadpool* pool, int worker_cnt, YThreadpoolCallback cb
     memset(pool, 0, sizeof(pool));
 
     pthread_cond_t blank_cond = PTHREAD_COND_INITIALIZER;
-    memcpy(&pool->jobs_cond, blank_cond, sizeof(blank_cond));
+    memcpy(&pool->jobs_cond, &blank_cond, sizeof(blank_cond));
 
     pthread_mutex_t blank_mutex = PTHREAD_MUTEX_INITIALIZER;
-    memcpy(&pool->jobs_mutex, blank_mutex, sizeof(blank_mutex));
+    memcpy(&pool->jobs_mutex, &blank_mutex, sizeof(blank_mutex));
 
     for (int i = 0; i < worker_cnt; i++) {
         YWorker* worker = (YWorker*)malloc(sizeof(YWorker));
-        if (worker == NULL) {
+        if (!worker) {
             perror("malloc worker failed\n");
             return -1;
         }
@@ -75,6 +75,7 @@ int YThreadpool_create(YThreadpool* pool, int worker_cnt, YThreadpoolCallback cb
             free(worker);
             return -1;
         }
+        printf("create a new worker\n");
 
         YLIST_ADD(worker, pool->workers);
     }
@@ -99,6 +100,7 @@ int YThreadpool_destroy(YThreadpool* pool) {
 
     for (YWorker* worker = pool->workers; worker != NULL; worker = worker->next) {
         worker->terminate = 1;
+        printf("terminate a worker\n");
     }
 
     pthread_mutex_lock(&pool->jobs_mutex);
