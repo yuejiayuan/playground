@@ -6,6 +6,8 @@
 #define JOBS1_COUNT (8)
 #define JOBS2_COUNT (18)
 
+void printjobs_test(YThreadpool* pool);
+
 void job_func(void* data) {
     int job_id = *((int*)data);
     printf("THIS IS JOB #%d\n", job_id);
@@ -19,6 +21,18 @@ int main() {
     }
 
     YThreadpool_create(pool, WORKER_COUNT, YThreadpool_callback);
+
+    printjobs_test(pool);
+
+    YThreadpool_destroy(pool);
+    free(pool);
+
+    printf("All Completed!\n");
+    return 0;
+}
+
+void printjobs_test(YThreadpool* pool) {
+    printf("multijobs_test() starts\n");
 
     YJob* jobs1[JOBS1_COUNT];
     int jobs1_id[JOBS1_COUNT];
@@ -42,14 +56,12 @@ int main() {
     }
 
     _sleep(5000);
-    YThreadpool_destroy(pool);
-    free(pool);
+
     for (int i = 0; i < JOBS1_COUNT; i++) {
         free(jobs1[i]);
     }
     for (int i = 0; i < JOBS2_COUNT; i++) {
         free(jobs2[i]);
     }
-    printf("Completed\n");
-    return 0;
+    printf("multijobs_test() completed\n");
 }

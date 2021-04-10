@@ -6,6 +6,13 @@
 
 //#define DEBUG_MODE
 
+// 定义DEBUG_PRINT
+#ifdef DEBUG_MODE
+#define DEBUG_PRINT(format, ...) printf(format, ## __VA_ARGS__);
+#else
+#define DEBUG_PRINT(format,...)
+#endif
+
 // 头插法入链表
 #define YLIST_ADD(item, list) do {  \
     item->prev = NULL;  \
